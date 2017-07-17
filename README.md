@@ -7,9 +7,9 @@ a basic infrastructure to test and compare them.
 
 ### Stacks
 
-                                                Name                                                   |      Reference
--------------------------------------------------------------------------------------------------------|--------------------
-[Elimination-Backoff Stack](src/main/java/io/github/chatzikalymnios/lfds/EliminationBackoffStack.java) | [[1]](#Hendler2004)
+| Name | Reference |
+|------|-----------|
+| [Elimination-Backoff Stack](src/main/java/io/github/chatzikalymnios/lfds/EliminationBackoffStack.java) | [[1]](#Hendler2004) |
 
 ## References
 
