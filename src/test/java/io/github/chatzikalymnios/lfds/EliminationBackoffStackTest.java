@@ -1,6 +1,7 @@
 package io.github.chatzikalymnios.lfds;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +23,8 @@ public class EliminationBackoffStackTest {
 
 	@Test
 	public void testPushPop() {
+		assertNull(stack.pop());
+
 		stack.push(1);
 		stack.push(2);
 
@@ -30,6 +33,8 @@ public class EliminationBackoffStackTest {
 		stack.push(3);
 		assertEquals((long) 3, (long) stack.pop());
 		assertEquals((long) 1, (long) stack.pop());
+
+		assertNull(stack.pop());
 	}
 
 }

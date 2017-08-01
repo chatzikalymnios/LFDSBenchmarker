@@ -14,13 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.chatzikalymnios.lfds.EliminationBackoffStack;
+import io.github.chatzikalymnios.lfds.LockFreeQueue;
 import io.github.chatzikalymnios.lfds.LockFreeStack;
+import io.github.chatzikalymnios.lfds.MichaelScottQueue;
 
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
 	/* Data structure names */
 	private static final String EB_STACK = "EBStack";
+	private static final String MS_QUEUE = "MSQueue";
 
 	/* Default values */
 	private static final int DEFAULT_SPIN_DELAY = 100000; // nanoseconds
@@ -30,13 +33,14 @@ public class App {
 	private static final Option NUM_THREADS_OPTION = Option.builder("t").argName("num").hasArg()
 			.desc("number of threads to use").required().build();
 	private static final Option DATA_STRUCTURE_OPTION = Option.builder("d").argName("datastructure").hasArg()
-			.desc("data structure to benchmark\n[" + EB_STACK + "]").required().build();
+			.desc("data structure to benchmark\n[" + EB_STACK + ", " + MS_QUEUE + "]").required().build();
 	private static final Option NUM_ITEMS_OPTION = Option.builder("i").argName("num").hasArg()
 			.desc("number of items to insert and remove").required().build();
 	private static final Option WORKLOAD_OPTION = Option.builder("w").argName("microseconds").hasArg()
 			.desc("concurrent workload in microseconds").required().build();
-	private static final Option SPIN_DELAY_OPTION = Option.builder("s").argName("nanoseconds").hasArg().desc(
-			"amount of time to wait for elimination partner in nanoseconds (applicable to EBStack) [default: 100000]")
+	private static final Option SPIN_DELAY_OPTION = Option.builder("s").argName("nanoseconds").hasArg()
+			.desc("amount of time to wait for elimination partner in nanoseconds (applicable to " + EB_STACK
+					+ ") [default: 100000]")
 			.build();
 
 	private static final Options allOptions = new Options();
@@ -146,6 +150,10 @@ public class App {
 		case EB_STACK:
 			LockFreeStack<Integer> stack = new EliminationBackoffStack<>(numThreads, spinDelay);
 			benchmark = new StackBenchmark(stack, numThreads, numItems, workload);
+			break;
+		case MS_QUEUE:
+			LockFreeQueue<Integer> queue = new MichaelScottQueue<>();
+			benchmark = new QueueBenchmark(queue, numThreads, numItems, workload);
 			break;
 		default:
 			logger.error("Unknown data structure: " + dataStructure);

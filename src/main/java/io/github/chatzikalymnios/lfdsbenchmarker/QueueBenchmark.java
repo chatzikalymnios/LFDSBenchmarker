@@ -15,24 +15,24 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.chatzikalymnios.lfds.LockFreeStack;
+import io.github.chatzikalymnios.lfds.LockFreeQueue;
 
-public class StackBenchmark implements Benchmark {
-	private static final Logger logger = LoggerFactory.getLogger(StackBenchmark.class);
+public class QueueBenchmark implements Benchmark {
+	private static final Logger logger = LoggerFactory.getLogger(QueueBenchmark.class);
 
 	private static final int NANO_IN_MICROSECONDS = 1000;
 	private static final int NANO_IN_MILLISECONDS = 1000000;
 
 	private ExecutorService executorService;
-	private LockFreeStack<Integer> stack;
+	private LockFreeQueue<Integer> queue;
 	private int numThreads;
 	private int numItems;
 	private int workload;
 	private List<Integer> items;
 
-	public StackBenchmark(LockFreeStack<Integer> stack, int numThreads, int numItems, int workload) {
+	public QueueBenchmark(LockFreeQueue<Integer> queue, int numThreads, int numItems, int workload) {
 		this.executorService = Executors.newFixedThreadPool(numThreads);
-		this.stack = stack;
+		this.queue = queue;
 		this.numThreads = numThreads;
 		this.numItems = numItems;
 		this.workload = workload;
@@ -64,7 +64,7 @@ public class StackBenchmark implements Benchmark {
 	public void run() throws InterruptedException, ExecutionException {
 		Collection<Callable<List<Integer>>> workers = createWorkers();
 
-		System.out.println("StackBenchmark [" + stack.getClass().getSimpleName() + "] running...");
+		System.out.println("QueueBenchmark [" + queue.getClass().getSimpleName() + "] running...");
 
 		long startTime = System.nanoTime();
 
@@ -75,30 +75,30 @@ public class StackBenchmark implements Benchmark {
 
 		executorService.shutdown();
 
-		System.out.println("StackBenchmark [" + stack.getClass().getSimpleName() + "] completed");
+		System.out.println("QueueBenchmark [" + queue.getClass().getSimpleName() + "] completed");
 		System.out.println("---------------------------------------------------");
 		System.out.println("Elapsed time: " + elapsedTime + " milliseconds");
 		System.out.println("---------------------------------------------------");
 
 		System.out.println("Errors:");
 
-		if (stack.pop() != null) {
+		if (queue.dequeue() != null) {
 			System.out.println("\tThe stack is not empty after test");
 		}
 
-		List<Integer> poppedItems = gatherPoppedItems(futures);
+		List<Integer> dequeuedItems = gatherDequeuedItems(futures);
 
-		if (poppedItems.size() != numItems) {
-			System.out.println("\tPushed " + numItems + " items but popped " + poppedItems.size() + " items");
+		if (dequeuedItems.size() != numItems) {
+			System.out.println("\tEnqueued " + numItems + " items but dequeued " + dequeuedItems.size() + " items");
 		}
 
-		if (hasDuplicates(poppedItems)) {
-			System.out.println("\tDuplicate element(s) were popped from the stack");
+		if (hasDuplicates(dequeuedItems)) {
+			System.out.println("\tDuplicate element(s) were dequeued from the stack");
 		}
 
 		System.out.println("---------------------------------------------------");
 
-		stack.printStats(System.out);
+		queue.printStats(System.out);
 	}
 
 	private Collection<Callable<List<Integer>>> createWorkers() {
@@ -111,7 +111,7 @@ public class StackBenchmark implements Benchmark {
 			int from = i * itemsPerWorker;
 			int to = Math.min((i + 1) * itemsPerWorker, numItems);
 			numUsedItems += to - from;
-			workers.add(new StackWorker(items.subList(from, to), itemsPerWorker));
+			workers.add(new QueueWorker(items.subList(from, to), itemsPerWorker));
 		}
 
 		numItems = numUsedItems;
@@ -119,15 +119,15 @@ public class StackBenchmark implements Benchmark {
 		return workers;
 	}
 
-	private List<Integer> gatherPoppedItems(List<Future<List<Integer>>> futures)
+	private List<Integer> gatherDequeuedItems(List<Future<List<Integer>>> futures)
 			throws InterruptedException, ExecutionException {
-		List<Integer> poppedItems = new ArrayList<>();
+		List<Integer> dequeuedItems = new ArrayList<>();
 
 		for (Future<List<Integer>> future : futures) {
-			poppedItems.addAll(future.get());
+			dequeuedItems.addAll(future.get());
 		}
 
-		return poppedItems;
+		return dequeuedItems;
 	}
 
 	private boolean hasDuplicates(List<Integer> items) {
@@ -136,30 +136,30 @@ public class StackBenchmark implements Benchmark {
 		return set.size() < items.size();
 	}
 
-	private class StackWorker implements Callable<List<Integer>> {
+	private class QueueWorker implements Callable<List<Integer>> {
 		private List<Integer> items;
 		private int numOps;
 
-		StackWorker(List<Integer> items, int numOps) {
+		QueueWorker(List<Integer> items, int numOps) {
 			this.items = items;
 			this.numOps = numOps;
 		}
 
 		@Override
 		public List<Integer> call() throws Exception {
-			List<Integer> popped = new ArrayList<>();
+			List<Integer> dequeued = new ArrayList<>();
 
 			for (int i = 0; i < numOps; i++) {
-				stack.push(items.get(i));
+				queue.enqueue(items.get(i));
 				spin();
 			}
 
 			for (int i = 0; i < numOps; i++) {
-				popped.add(stack.pop());
+				dequeued.add(queue.dequeue());
 				spin();
 			}
 
-			return popped;
+			return dequeued;
 		}
 
 		private void spin() {
@@ -171,5 +171,4 @@ public class StackBenchmark implements Benchmark {
 		}
 
 	}
-
 }
