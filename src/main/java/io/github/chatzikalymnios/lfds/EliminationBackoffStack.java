@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 /**
  * An implementation of the Elimination-Backoff Stack.
  *
- * @see <a href="http://doi.acm.org/10.1145/1007912.1007944">Danny Hendler, Nir
- *      Shavit, and Lena Yerushalmi. 2004. A scalable lock-free stack algorithm.
- *      In Proceedings of the sixteenth annual ACM symposium on Parallelism in
- *      algorithms and architectures (SPAA '04). ACM, New York, NY, USA,
- *      206-215.</a>
+ * @see <a href="http://doi.acm.org/10.1145/1007912.1007944" target=
+ *      "_blank">Danny Hendler, Nir Shavit, and Lena Yerushalmi. 2004. A
+ *      scalable lock-free stack algorithm. In Proceedings of the sixteenth
+ *      annual ACM symposium on Parallelism in algorithms and architectures
+ *      (SPAA '04). ACM, New York, NY, USA, 206-215.</a>
  */
 public class EliminationBackoffStack<E> implements LockFreeStack<E> {
 	private static final Logger logger = LoggerFactory.getLogger(EliminationBackoffStack.class);
@@ -61,11 +61,12 @@ public class EliminationBackoffStack<E> implements LockFreeStack<E> {
 	private AtomicInteger[] collision;
 
 	/**
-	 * Creates an empty EBStack with the specified <code>concurrencyLevel</code> and
-	 * the default <code>spinDelay</code> value. The <code>concurrencyLevel</code>
-	 * denotes the number of concurrently updating threads and is used as the size
-	 * of the internal collision array. The <code>spinDelay</code> denotes the
-	 * amount of time (nanoseconds) to wait for an elimination partner.
+	 * Creates an empty EliminationBackoffStack with the specified
+	 * <code>concurrencyLevel</code> and the default <code>spinDelay</code> value.
+	 * The <code>concurrencyLevel</code> denotes the number of concurrently updating
+	 * threads and is used as the size of the internal collision array. The
+	 * <code>spinDelay</code> denotes the amount of time (nanoseconds) to wait for
+	 * an elimination partner.
 	 *
 	 * @param concurrencyLevel
 	 *            the number of concurrently updating threads
@@ -75,11 +76,12 @@ public class EliminationBackoffStack<E> implements LockFreeStack<E> {
 	}
 
 	/**
-	 * Creates an empty EBStack with the specified <code>concurrencyLevel</code> and
-	 * <code>spinDelay</code>. The <code>concurrencyLevel</code> denotes the number
-	 * of concurrently updating threads and is used as the size of the internal
-	 * collision array. The <code>spinDelay</code> denotes the amount of time
-	 * (nanoseconds) to wait for an elimination partner.
+	 * Creates an empty EliminationBackoffStack with the specified
+	 * <code>concurrencyLevel</code> and <code>spinDelay</code>. The
+	 * <code>concurrencyLevel</code> denotes the number of concurrently updating
+	 * threads and is used as the size of the internal collision array. The
+	 * <code>spinDelay</code> denotes the amount of time (nanoseconds) to wait for
+	 * an elimination partner.
 	 *
 	 * @param concurrencyLevel
 	 *            the number of concurrently updating threads

@@ -8,10 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the Michael Scott Queue.
+ * An implementation of the Michael-Scott Queue.
  *
- * @see <a href="https://doi.org/10.1145/248052.248106">Simple, fast, and
- *      practical non-blocking and blocking concurrent queue algorithms</a>
+ * @see <a href="https://doi.org/10.1145/248052.248106" target="_blank">Maged M.
+ *      Michael and Michael L. Scott. 1996. Simple, fast, and practical
+ *      non-blocking and blocking concurrent queue algorithms. In Proceedings of
+ *      the fifteenth annual ACM symposium on Principles of distributed
+ *      computing (PODC '96). ACM, New York, NY, USA, 267-275.</a>
  */
 public class MichaelScottQueue<E> implements LockFreeQueue<E> {
 	private static final Logger logger = LoggerFactory.getLogger(MichaelScottQueue.class);
@@ -23,6 +26,9 @@ public class MichaelScottQueue<E> implements LockFreeQueue<E> {
 	private final AtomicReference<Node> queueHead;
 	private final AtomicReference<Node> queueTail;
 
+	/**
+	 * Creates an empty MichaelScottStack.
+	 */
 	public MichaelScottQueue() {
 		// Create sentinel node
 		Node n = new Node();
@@ -112,6 +118,12 @@ public class MichaelScottQueue<E> implements LockFreeQueue<E> {
 		return data;
 	}
 
+	/**
+	 * Prints statistics about the Michael-Scott queue to the specified stream.
+	 *
+	 * @param stream
+	 *            PrintStream to print statistics to
+	 */
 	@Override
 	public void printStats(PrintStream stream) {
 		stream.println(getClass().getSimpleName() + " stats:");
